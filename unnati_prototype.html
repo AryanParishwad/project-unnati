@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Unnati - AI Career Advisor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .step-active {
+            border-color: #3b82f6; /* blue-500 */
+            color: #3b82f6;
+        }
+        .step-inactive {
+            border-color: #d1d5db; /* gray-300 */
+            color: #6b7280; /* gray-500 */
+        }
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: #e0e7ff; /* indigo-100 */
+            color: #3730a3; /* indigo-800 */
+            border-radius: 9999px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .tag-remove {
+            margin-left: 0.5rem;
+            cursor: pointer;
+            color: #4f46e5; /* indigo-600 */
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: #1f2937; /* gray-800 */
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        /* Custom focus styles for accessibility */
+        *:focus-visible {
+            outline: 3px solid #2563eb;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <!-- Main container -->
+    <div id="app" class="min-h-screen">
+        
+        <!-- Landing Page View -->
+        <div id="landingView" class="flex flex-col items-center justify-center min-h-screen p-4 text-center">
+            <header class="w-full max-w-4xl mx-auto absolute top-0 p-4">
+                <h1 class="text-2xl font-bold text-indigo-600">Project Unnati</h1>
+            </header>
+            <main class="max-w-3xl">
+                <h2 class="text-4xl md:text-6xl font-bold text-slate-900 mb-4">Your Future, Defined by Your Abilities.</h2>
+                <p class="text-lg md:text-xl text-slate-600 mb-8 max-w-2xl mx-auto">Project Unnati is a personalized AI career advisor for students with disabilities, focusing on your strengths to map a clear path to an inclusive and rewarding career.</p>
+                <button id="getStartedBtn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-indigo-700 transition-transform transform hover:scale-105 shadow-lg">Get Started</button>
+            </main>
+        </div>
+
+        <!-- Onboarding View -->
+        <div id="onboardingView" class="hidden">
+            <div class="max-w-4xl mx-auto p-4 md:p-8">
+                <h1 class="text-3xl font-bold text-indigo-600 text-center mb-2">Create Your 'Ability-First' Profile</h1>
+                <p class="text-center text-slate-600 mb-8">Let's focus on what you can do. This will help us find the best opportunities for you.</p>
+
+                <!-- Progress Bar -->
+                <div id="progressBar" class="flex justify-between items-center mb-12">
+                    <div id="step-1" class="step-active flex-1 text-center">
+                        <div class="border-t-4 pb-2">Step 1</div>
+                        <div class="text-sm font-medium">Basics</div>
+                    </div>
+                    <div id="step-2" class="step-inactive flex-1 text-center">
+                        <div class="border-t-4 pb-2">Step 2</div>
+                        <div class="text-sm font-medium">Abilities</div>
+                    </div>
+                    <div id="step-3" class="step-inactive flex-1 text-center">
+                        <div class="border-t-4 pb-2">Step 3</div>
+                        <div class="text-sm font-medium">Enablers</div>
+                    </div>
+                    <div id="step-4" class="step-inactive flex-1 text-center">
+                        <div class="border-t-4 pb-2">Step 4</div>
+                        <div class="text-sm font-medium">Assistive Tech</div>
+                    </div>
+                </div>
+
+                <!-- Onboarding Steps -->
+                <div id="onboardingSteps">
+                    <!-- Step 1: Basic Info -->
+                    <div id="onboarding-step-1" class="bg-white p-8 rounded-xl shadow-md">
+                        <h3 class="text-2xl font-semibold mb-6">Let's start with the basics</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <label for="fullName" class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                                <input type="text" id="fullName" placeholder="e.g., Priya Kumar" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label for="educationLevel" class="block text-sm font-medium text-slate-700 mb-1">Highest Education Level</label>
+                                <select id="educationLevel" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option>High School</option>
+                                    <option>Diploma</option>
+                                    <option>Bachelor's Degree</option>
+                                    <option>Master's Degree</option>
+                                    <option>Doctorate</option>
+                                </select>
+                            </div>
+                             <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">What fields are you interested in?</label>
+                                <p class="text-sm text-slate-500 mb-2">Select up to three.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <button class="interest-btn border border-slate-300 px-3 py-1 rounded-full hover:bg-indigo-100 hover:border-indigo-500" data-interest="Technology">Technology</button>
+                                    <button class="interest-btn border border-slate-300 px-3 py-1 rounded-full hover:bg-indigo-100 hover:border-indigo-500" data-interest="Arts & Design">Arts & Design</button>
+                                    <button class="interest-btn border border-slate-300 px-3 py-1 rounded-full hover:bg-indigo-100 hover:border-indigo-500" data-interest="Science">Science</button>
+                                    <button class="interest-btn border border-slate-300 px-3 py-1 rounded-full hover:bg-indigo-100 hover:border-indigo-500" data-interest="Business">Business</button>
+                                    <button class="interest-btn border border-slate-300 px-3 py-1 rounded-full hover:bg-indigo-100 hover:border-indigo-500" data-interest="Healthcare">Healthcare</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Proven Abilities -->
+                    <div id="onboarding-step-2" class="hidden bg-white p-8 rounded-xl shadow-md">
+                        <h3 class="text-2xl font-semibold mb-2">What are your proven abilities?</h3>
+                        <p class="text-slate-600 mb-6">List your technical and soft skills. Great communication, problem-solving, and resilience are valuable skills!</p>
+                        <div class="mb-4">
+                            <label for="abilityInput" class="block text-sm font-medium text-slate-700 mb-1">Add a skill and press Enter</label>
+                            <input type="text" id="abilityInput" placeholder="e.g., Python, Teamwork, Figma" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div id="abilitiesContainer" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <!-- Step 3: Success Enablers -->
+                    <div id="onboarding-step-3" class="hidden bg-white p-8 rounded-xl shadow-md">
+                        <h3 class="text-2xl font-semibold mb-2">What helps you succeed at work?</h3>
+                        <p class="text-slate-600 mb-6">Select the tools or environment adjustments that enable you to do your best work.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="flex items-center p-4 border border-slate-200 rounded-lg hover:bg-slate-100 cursor-pointer"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-4" value="Screen Reader Compatibility"> Screen Reader Compatibility</label>
+                            <label class="flex items-center p-4 border border-slate-200 rounded-lg hover:bg-slate-100 cursor-pointer"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-4" value="Flexible Work Hours"> Flexible Work Hours</label>
+                            <label class="flex items-center p-4 border border-slate-200 rounded-lg hover:bg-slate-100 cursor-pointer"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-4" value="Quiet Workspace"> Quiet Workspace</label>
+                            <label class="flex items-center p-4 border border-slate-200 rounded-lg hover:bg-slate-100 cursor-pointer"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-4" value="Ergonomic Equipment"> Ergonomic Equipment</label>
+                            <label class="flex items-center p-4 border border-slate-200 rounded-lg hover:bg-slate-100 cursor-pointer"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-4" value="ASL Interpreter Availability"> ASL Interpreter Availability</label>
+                            <label class="flex items-center p-4 border border-slate-200 rounded-lg hover:bg-slate-100 cursor-pointer"><input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-4" value="Remote Work Options"> Remote Work Options</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4: Assistive Tech -->
+                    <div id="onboarding-step-4" class="hidden bg-white p-8 rounded-xl shadow-md">
+                        <h3 class="text-2xl font-semibold mb-2">What assistive technologies are you proficient with?</h3>
+                        <p class="text-slate-600 mb-6">This shows employers you're tech-savvy and ready to integrate into a digital workplace.</p>
+                        <div class="mb-4">
+                            <label for="assistiveTechInput" class="block text-sm font-medium text-slate-700 mb-1">Add a technology and press Enter</label>
+                            <input type="text" id="assistiveTechInput" placeholder="e.g., JAWS, NVDA, Dragon" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div id="assistiveTechContainer" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                </div>
+                
+                <!-- Navigation Buttons -->
+                <div class="mt-8 flex justify-between">
+                    <button id="prevBtn" class="bg-slate-200 text-slate-700 font-bold py-2 px-6 rounded-lg hover:bg-slate-300 transition hidden">Previous</button>
+                    <button id="nextBtn" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-700 transition ml-auto">Next</button>
+                    <button id="finishBtn" class="bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700 transition ml-auto hidden">Finish & View Dashboard</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App View (Dashboard, Jobs etc.) -->
+        <div id="mainAppView" class="hidden">
+            <nav class="bg-white shadow-sm sticky top-0 z-10">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-16">
+                        <div class="flex-shrink-0 text-2xl font-bold text-indigo-600">
+                            Project Unnati
+                        </div>
+                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                            <button id="dashboardTab" class="border-indigo-500 text-slate-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Dashboard</button>
+                            <button id="jobsTab" class="border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Job Search</button>
+                        </div>
+                        <div id="userProfile" class="flex items-center">
+                            <span id="userNameDisplay" class="font-medium mr-3"></span>
+                            <div class="w-10 h-10 bg-indigo-200 text-indigo-700 flex items-center justify-center rounded-full font-bold text-lg">
+                                <span id="userInitials"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Dashboard Content -->
+            <main id="dashboardContent" class="p-4 md:p-8 max-w-7xl mx-auto">
+                <h2 id="welcomeMessage" class="text-3xl font-bold text-slate-900 mb-8"></h2>
+                
+                <!-- AI Recommendations -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Career Paths -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="flex items-center text-xl font-semibold mb-4">
+                            <i data-lucide="compass" class="mr-2 text-indigo-500"></i>
+                            Top Career Paths for You
+                        </h3>
+                        <div id="careerRecommendations" class="space-y-4">
+                            <!-- JS will populate this -->
+                        </div>
+                    </div>
+                    
+                    <!-- Skills to Build & Mentors -->
+                    <div class="space-y-8">
+                         <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="flex items-center text-xl font-semibold mb-4">
+                               <i data-lucide="sparkles" class="mr-2 text-amber-500"></i>
+                                Recommended Skills to Build
+                            </h3>
+                            <div id="skillRecommendations" class="space-y-3">
+                                <!-- JS will populate this -->
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="flex items-center text-xl font-semibold mb-4">
+                               <i data-lucide="users" class="mr-2 text-green-500"></i>
+                                Connect with a Mentor
+                            </h3>
+                            <div class="flex items-center space-x-4">
+                                <img src="https://placehold.co/64x64/e0e7ff/4338ca?text=RK" alt="Mentor" class="w-16 h-16 rounded-full">
+                                <div>
+                                    <p class="font-semibold">Ravi Kiran</p>
+                                    <p class="text-sm text-slate-500">Senior Accessibility Engineer at Google</p>
+                                    <button class="text-sm text-indigo-600 hover:underline font-medium mt-1">Request Intro</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Job Search Content -->
+            <main id="jobsContent" class="hidden p-4 md:p-8 max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold text-slate-900 mb-6">Find Your Next Opportunity</h2>
+                
+                <!-- Search Bar -->
+                <div class="flex space-x-4 mb-8">
+                    <input type="text" placeholder="Job title or keyword" class="flex-grow px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                     <input type="text" placeholder="Location" class="w-1/4 px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    <button id="searchJobsBtn" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-700 transition">Search</button>
+                </div>
+
+                <!-- Job Listings -->
+                 <div id="jobListingsContainer" class="bg-white p-6 rounded-xl shadow-md">
+                     <p id="jobSearchMessage" class="text-slate-500">Click search to see simulated job results from inclusive employers.</p>
+                     <div id="jobListings" class="hidden space-y-4">
+                         <!-- JS will populate this -->
+                     </div>
+                 </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // State management
+            const state = {
+                currentView: 'landingView',
+                onboardingStep: 1,
+                userProfile: {
+                    name: '',
+                    education: '',
+                    interests: [],
+                    abilities: [],
+                    enablers: [],
+                    assistiveTech: []
+                },
+                mockData: {
+                    careers: [
+                        { title: 'Accessibility Tester', company: 'Tech Solutions Inc.', match: '95%', description: 'Ensure digital products are usable by people of all abilities. Your attention to detail and knowledge of assistive tech are a perfect fit.' },
+                        { title: 'UX Researcher', company: 'Creative Minds', match: '88%', description: 'Leverage your unique perspective to help design more empathetic and user-friendly products for a diverse audience.' },
+                        { title: 'Data Analyst (Remote)', company: 'DataDriven Co.', match: '82%', description: 'Analyze data to find insights. Strong problem-solving skills and proficiency with data tools are key.' },
+                    ],
+                    skills: [
+                        { name: 'WCAG 2.1 Compliance', link: '#' },
+                        { name: 'User Experience (UX) Principles', link: '#' },
+                        { name: 'Python for Data Analysis', link: '#' },
+                    ],
+                    jobs: [
+                        { title: 'Front-End Developer', company: 'Innovate Corp', location: 'Bengaluru', score: 9.2, url: '#' },
+                        { title: 'Content Strategist', company: 'Global Media House', location: 'Mumbai (Hybrid)', score: 8.5, url: '#' },
+                        { title: 'HR Coordinator', company: 'PeopleFirst Ltd.', location: 'Delhi', score: 9.5, url: '#' },
+                        { title: 'Quality Assurance Engineer', company: 'FutureTech', location: 'Pune (Remote)', score: 7.8, url: '#' },
+                    ]
+                }
+            };
+
+            // DOM Elements
+            const views = {
+                landing: document.getElementById('landingView'),
+                onboarding: document.getElementById('onboardingView'),
+                mainApp: document.getElementById('mainAppView'),
+            };
+
+            const onboardingElems = {
+                steps: document.querySelectorAll('#onboardingSteps > div'),
+                progress: document.querySelectorAll('#progressBar > div'),
+                prevBtn: document.getElementById('prevBtn'),
+                nextBtn: document.getElementById('nextBtn'),
+                finishBtn: document.getElementById('finishBtn'),
+            };
+            
+            const mainAppElems = {
+                dashboardContent: document.getElementById('dashboardContent'),
+                jobsContent: document.getElementById('jobsContent'),
+                dashboardTab: document.getElementById('dashboardTab'),
+                jobsTab: document.getElementById('jobsTab'),
+            }
+
+            // --- Utility Functions ---
+            const switchView = (viewName) => {
+                Object.values(views).forEach(v => v.classList.add('hidden'));
+                if (views[viewName]) {
+                    views[viewName].classList.remove('hidden');
+                    state.currentView = viewName;
+                }
+            };
+
+            // --- Onboarding Logic ---
+            const updateOnboardingUI = () => {
+                onboardingElems.steps.forEach((step, index) => {
+                    step.classList.toggle('hidden', index + 1 !== state.onboardingStep);
+                });
+
+                onboardingElems.progress.forEach((prog, index) => {
+                    prog.classList.toggle('step-active', index < state.onboardingStep);
+                    prog.classList.toggle('step-inactive', index >= state.onboardingStep);
+                });
+                
+                onboardingElems.prevBtn.classList.toggle('hidden', state.onboardingStep === 1);
+                onboardingElems.nextBtn.classList.toggle('hidden', state.onboardingStep === 4);
+                onboardingElems.finishBtn.classList.toggle('hidden', state.onboardingStep !== 4);
+            };
+
+            const setupTagInput = (inputId, containerId, stateKey) => {
+                const input = document.getElementById(inputId);
+                const container = document.getElementById(containerId);
+
+                const renderTags = () => {
+                    container.innerHTML = '';
+                    state.userProfile[stateKey].forEach(item => {
+                        const tagEl = document.createElement('div');
+                        tagEl.className = 'tag';
+                        tagEl.innerHTML = `
+                            <span>${item}</span>
+                            <span class="tag-remove" data-item="${item}" role="button" aria-label="Remove ${item}">&times;</span>
+                        `;
+                        container.appendChild(tagEl);
+                    });
+                };
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && input.value.trim() !== '') {
+                        e.preventDefault();
+                        const newItem = input.value.trim();
+                        if (!state.userProfile[stateKey].includes(newItem)) {
+                            state.userProfile[stateKey].push(newItem);
+                            renderTags();
+                        }
+                        input.value = '';
+                    }
+                });
+
+                container.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('tag-remove')) {
+                        const itemToRemove = e.target.dataset.item;
+                        state.userProfile[stateKey] = state.userProfile[stateKey].filter(item => item !== itemToRemove);
+                        renderTags();
+                    }
+                });
+            };
+
+            document.getElementById('getStartedBtn').addEventListener('click', () => switchView('onboarding'));
+
+            onboardingElems.nextBtn.addEventListener('click', () => {
+                if (state.onboardingStep < 4) {
+                    state.onboardingStep++;
+                    updateOnboardingUI();
+                }
+            });
+            onboardingElems.prevBtn.addEventListener('click', () => {
+                if (state.onboardingStep > 1) {
+                    state.onboardingStep--;
+                    updateOnboardingUI();
+                }
+            });
+            
+            const interestButtons = document.querySelectorAll('.interest-btn');
+            interestButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const interest = btn.dataset.interest;
+                    const index = state.userProfile.interests.indexOf(interest);
+                    if(index > -1) {
+                        state.userProfile.interests.splice(index, 1);
+                        btn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600');
+                        btn.classList.add('border-slate-300');
+                    } else {
+                        if(state.userProfile.interests.length < 3) {
+                             state.userProfile.interests.push(interest);
+                             btn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
+                             btn.classList.remove('border-slate-300');
+                        }
+                    }
+                });
+            });
+
+            onboardingElems.finishBtn.addEventListener('click', () => {
+                // Collect final data
+                state.userProfile.name = document.getElementById('fullName').value || 'User';
+                state.userProfile.education = document.getElementById('educationLevel').value;
+                const enablersCheckboxes = document.querySelectorAll('#onboarding-step-3 input[type="checkbox"]:checked');
+                state.userProfile.enablers = Array.from(enablersCheckboxes).map(cb => cb.value);
+
+                // Switch to main app
+                populateDashboard();
+                switchView('mainApp');
+            });
+            
+            // --- Main App Logic ---
+            const populateDashboard = () => {
+                const { name } = state.userProfile;
+                document.getElementById('userNameDisplay').textContent = name;
+                document.getElementById('welcomeMessage').textContent = `Welcome back, ${name}!`;
+                document.getElementById('userInitials').textContent = name.split(' ').map(n => n[0]).join('').toUpperCase();
+
+                // Career Recommendations
+                const careerContainer = document.getElementById('careerRecommendations');
+                careerContainer.innerHTML = state.mockData.careers.map(career => `
+                    <div class="border border-slate-200 p-4 rounded-lg hover:shadow-lg transition-shadow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-semibold text-lg">${career.title}</h4>
+                                <p class="text-sm text-slate-500">${career.company}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-green-600 text-lg">${career.match}</p>
+                                <p class="text-sm text-slate-500">Match</p>
+                            </div>
+                        </div>
+                        <p class="text-slate-600 mt-2">${career.description}</p>
+                    </div>
+                `).join('');
+
+                // Skill Recommendations
+                const skillContainer = document.getElementById('skillRecommendations');
+                skillContainer.innerHTML = state.mockData.skills.map(skill => `
+                    <a href="${skill.link}" class="flex items-center justify-between p-3 bg-slate-100 rounded-md hover:bg-indigo-100 group">
+                        <span class="font-medium text-slate-700">${skill.name}</span>
+                        <i data-lucide="arrow-right" class="w-5 h-5 text-slate-400 group-hover:text-indigo-600 transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                `).join('');
+
+                lucide.createIcons(); // Re-render icons
+            };
+            
+            const populateJobs = () => {
+                 document.getElementById('jobSearchMessage').classList.add('hidden');
+                 const jobsContainer = document.getElementById('jobListings');
+                 jobsContainer.classList.remove('hidden');
+                 jobsContainer.innerHTML = state.mockData.jobs.map(job => {
+                    const scoreColor = job.score >= 9 ? 'bg-green-100 text-green-800' : job.score >= 8 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800';
+                    return `
+                    <a href="${job.url}" target="_blank" class="block border border-slate-200 p-4 rounded-lg hover:shadow-lg transition-shadow">
+                        <div class="flex flex-col sm:flex-row justify-between items-start">
+                            <div>
+                                <h4 class="font-semibold text-lg text-indigo-700">${job.title}</h4>
+                                <p class="text-md text-slate-700">${job.company}</p>
+                                <p class="text-sm text-slate-500 mt-1">${job.location}</p>
+                            </div>
+                            <div class="flex items-center gap-2 mt-2 sm:mt-0">
+                                <div class="tooltip">
+                                    <span class="font-bold text-lg px-3 py-1 rounded-full ${scoreColor}">${job.score}/10</span>
+                                    <span class="tooltiptext">The Employer Inclusivity Score is based on public data, DEI policies, and employee reviews.</span>
+                                </div>
+                                <p class="text-sm font-medium text-slate-600">Inclusivity Score</p>
+                            </div>
+                        </div>
+                    </a>
+                `}).join('');
+            };
+
+            mainAppElems.dashboardTab.addEventListener('click', () => {
+                mainAppElems.dashboardContent.classList.remove('hidden');
+                mainAppElems.jobsContent.classList.add('hidden');
+                mainAppElems.dashboardTab.classList.add('border-indigo-500', 'text-slate-900');
+                mainAppElems.dashboardTab.classList.remove('border-transparent', 'text-slate-500');
+                mainAppElems.jobsTab.classList.add('border-transparent', 'text-slate-500');
+                mainAppElems.jobsTab.classList.remove('border-indigo-500', 'text-slate-900');
+            });
+
+            mainAppElems.jobsTab.addEventListener('click', () => {
+                mainAppElems.dashboardContent.classList.add('hidden');
+                mainAppElems.jobsContent.classList.remove('hidden');
+                mainAppElems.jobsTab.classList.add('border-indigo-500', 'text-slate-900');
+                mainAppElems.jobsTab.classList.remove('border-transparent', 'text-slate-500');
+                mainAppElems.dashboardTab.classList.add('border-transparent', 'text-slate-500');
+                mainAppElems.dashboardTab.classList.remove('border-indigo-500', 'text-slate-900');
+            });
+            
+            document.getElementById('searchJobsBtn').addEventListener('click', populateJobs);
+            
+            // --- Initial Setup ---
+            setupTagInput('abilityInput', 'abilitiesContainer', 'abilities');
+            setupTagInput('assistiveTechInput', 'assistiveTechContainer', 'assistiveTech');
+            lucide.createIcons();
+            switchView('landing');
+        });
+    </script>
+</body>
+</html>
